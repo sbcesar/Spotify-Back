@@ -11,17 +11,5 @@ import java.io.FileInputStream
 class SpotifyapitfgApplication
 
 fun main(args: Array<String>) {
-
-	val serviceAccount = FileInputStream("src/main/resources/spotifyapitfg-firebase-adminsdk-fbsvc-a00762cadd.json")
-
-	val options = FirebaseOptions.builder()
-		.setCredentials(GoogleCredentials.fromStream(serviceAccount))
-		.build()
-
-	if (FirebaseApp.getApps().isEmpty()) {
-		FirebaseApp.initializeApp(options)
-		println("Initialized Firebase App")
-	}
-
 	runApplication<SpotifyapitfgApplication>(*args)
 }

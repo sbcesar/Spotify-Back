@@ -9,4 +9,6 @@ import java.util.Optional
 interface UsuarioRepository : MongoRepository<Usuario, String> {
 
     fun findByEmail(email: String): Usuario
+
+    fun findByFirebaseUID(firebaseUid: String): Optional<Usuario>
 }

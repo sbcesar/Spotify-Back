@@ -13,10 +13,6 @@ data class Usuario(
     val playlistCount: Int = 0,
     val seguidores: Int = 0,
     val seguidos: Int = 0,
-
-    val playlistsCreadas: MutableList<String> = mutableListOf(),
-    val likedCanciones: MutableList<String>,
-    val likedPlaylists: MutableList<String>,
-    val likedArtistas: MutableList<String>,
+    val biblioteca: Biblioteca = Biblioteca(),  // Guarda los gustos del usuario
     val role: Role? = Role.USER
 )
