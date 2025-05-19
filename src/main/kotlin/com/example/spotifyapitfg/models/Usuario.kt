@@ -9,7 +9,6 @@ data class Usuario(
     val id: String?,
     val nombre: String,
     val email: String,
-    val password: String,
     val playlistCount: Int = 0,
     val seguidores: Int = 0,
     val seguidos: Int = 0,

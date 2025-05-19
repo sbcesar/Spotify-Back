@@ -6,6 +6,8 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.http.SessionCreationPolicy
+import org.springframework.security.oauth2.jwt.JwtDecoder
+import org.springframework.security.oauth2.jwt.NimbusJwtDecoder
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 
@@ -16,22 +18,20 @@ class SecurityConfig(private val firebaseFilter: FirebaseAuthenticationFilter) {
     @Bean
     fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
         http
-            .csrf { csrf -> csrf.disable() }
+            .csrf { it.disable() }
             .authorizeHttpRequests { auth -> auth
                 // Poner todos los permisos
-
+                .requestMatchers("/usuario/register").permitAll()
                 .anyRequest().authenticated()
             }
-            .oauth2ResourceServer { oauth2 ->
-                oauth2.jwt(Customizer.withDefaults())
-            }
+
             .sessionManagement{ session -> session
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             }
-            .httpBasic(Customizer.withDefaults())
             .addFilterBefore(firebaseFilter, UsernamePasswordAuthenticationFilter::class.java)
 
 
         return http.build()
     }
+
 }

@@ -8,7 +8,6 @@ import java.util.Optional
 @Repository
 interface UsuarioRepository : MongoRepository<Usuario, String> {
 
-    fun findByEmail(email: String): Usuario
+    fun findByEmail(email: String): Optional<Usuario>
 
-    fun findByFirebaseUID(firebaseUid: String): Optional<Usuario>
 }
