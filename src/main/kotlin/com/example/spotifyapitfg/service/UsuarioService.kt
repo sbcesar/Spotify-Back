@@ -45,15 +45,4 @@ class UsuarioService {
         }
     }
 
-    fun addSongToFavs(uid: String, cancionId: String): UsuarioDTO {
-        val usuario = usuarioRepository.findById(uid)
-            .orElseThrow { NotFoundException("User not found") }
-
-        if (!usuario.biblioteca.likedCanciones.contains(cancionId)) {
-            usuario.biblioteca.likedCanciones.add(cancionId)
-            usuarioRepository.save(usuario)
-        }
-
-        return usuarioMapper.toDTO(usuario)
-    }
 }

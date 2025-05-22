@@ -10,5 +10,7 @@ data class Playlist(
     val nombre: String,
     val descripcion: String?,
     val canciones: List<Cancion>,
-    val creadorId: String   // Uso el id del creador en vez del Creador en si (Usuario) porque se duplica la informacion, si hay cambios en usuario tengo que actualizar todas las playlist, crecen los documentos de la db muchisimo
+    val creadorId: String,
+    val creadorNombre: String,
+    val imagenUrl: String?
 )

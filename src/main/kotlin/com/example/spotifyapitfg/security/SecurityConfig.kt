@@ -1,13 +1,11 @@
 package com.example.spotifyapitfg.security
 
-import org.springframework.security.config.Customizer
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.http.HttpMethod
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.http.SessionCreationPolicy
-import org.springframework.security.oauth2.jwt.JwtDecoder
-import org.springframework.security.oauth2.jwt.NimbusJwtDecoder
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 
@@ -22,6 +20,22 @@ class SecurityConfig(private val firebaseFilter: FirebaseAuthenticationFilter) {
             .authorizeHttpRequests { auth -> auth
                 // Poner todos los permisos
                 .requestMatchers("/usuario/register").permitAll()
+                .requestMatchers("/spotify/token").permitAll()
+
+                .requestMatchers(HttpMethod.GET, "/spotify/buscar/canciones").permitAll()
+                .requestMatchers(HttpMethod.GET, "/spotify/buscar/albumes").permitAll()
+                .requestMatchers(HttpMethod.GET, "/spotify/buscar/artistas").permitAll()
+                .requestMatchers(HttpMethod.GET, "/spotify/buscar/playlists").permitAll()
+
+                .requestMatchers(HttpMethod.POST, "/canciones/like/{cancionId}").permitAll()
+                .requestMatchers(HttpMethod.DELETE, "/canciones/like/{cancionId}").permitAll()
+
+                .requestMatchers(HttpMethod.POST, "/artistas/like/{artistaId}").permitAll()
+                .requestMatchers(HttpMethod.DELETE, "/artistas/like/{artistaId}").permitAll()
+
+                .requestMatchers(HttpMethod.POST, "/playlists/like/{playlistId}").permitAll()
+                .requestMatchers(HttpMethod.DELETE, "/playlists/like/{playlistId}").permitAll()
+
                 .anyRequest().authenticated()
             }
 

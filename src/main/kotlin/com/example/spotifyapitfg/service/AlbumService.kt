@@ -7,8 +7,9 @@ import com.example.spotifyapitfg.repository.UsuarioRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
+
 @Service
-class PlaylistService {
+class AlbumService {
 
     @Autowired
     private lateinit var usuarioRepository: UsuarioRepository
@@ -16,24 +17,24 @@ class PlaylistService {
     @Autowired
     private lateinit var usuarioMapper: UsuarioMapper
 
-    fun likePlaylist(uid: String, playlistId: String): UsuarioDTO {
+    fun likeAlbum(uid: String, albumId: String): UsuarioDTO {
         val usuario = usuarioRepository.findById(uid)
             .orElseThrow { NotFoundException("Usuario no encontrado") }
 
-        if (!usuario.biblioteca.likedPlaylists.contains(playlistId)) {
-            usuario.biblioteca.likedPlaylists.add(playlistId)
+        if (!usuario.biblioteca.likedAlbums.contains(albumId)) {
+            usuario.biblioteca.likedAlbums.add(albumId)
             usuarioRepository.save(usuario)
         }
 
         return usuarioMapper.toDTO(usuario)
     }
 
-    fun unlikePlaylist(uid: String, playlistId: String): UsuarioDTO {
+    fun unlikeAlbum(uid: String, albumId: String): UsuarioDTO {
         val usuario = usuarioRepository.findById(uid)
             .orElseThrow { NotFoundException("Usuario no encontrado") }
 
-        if (usuario.biblioteca.likedPlaylists.contains(playlistId)) {
-            usuario.biblioteca.likedPlaylists.remove(playlistId)
+        if (usuario.biblioteca.likedAlbums.contains(albumId)) {
+            usuario.biblioteca.likedAlbums.remove(albumId)
             usuarioRepository.save(usuario)
         }
 

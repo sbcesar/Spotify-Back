@@ -1,7 +1,6 @@
 package com.example.spotifyapitfg.controller
 
 import com.example.spotifyapitfg.dto.UsuarioDTO
-import com.example.spotifyapitfg.dto.UsuarioLoginDTO
 import com.example.spotifyapitfg.dto.UsuarioRegisterDTO
 import com.example.spotifyapitfg.mapper.UsuarioMapper
 import com.example.spotifyapitfg.models.Biblioteca
