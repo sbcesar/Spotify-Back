@@ -1,5 +1,6 @@
 package com.example.spotifyapitfg.controller
 
+import com.example.spotifyapitfg.dto.UsuarioBibliotecaMostrableDTO
 import com.example.spotifyapitfg.dto.UsuarioDTO
 import com.example.spotifyapitfg.dto.UsuarioRegisterDTO
 import com.example.spotifyapitfg.mapper.UsuarioMapper
@@ -9,6 +10,7 @@ import com.example.spotifyapitfg.service.FirebaseAuthService
 import com.example.spotifyapitfg.service.UsuarioService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
+import org.springframework.security.core.Authentication
 import org.springframework.web.bind.annotation.*
 
 @RestController
@@ -19,18 +21,27 @@ class UsuarioController {
     private lateinit var firebaseAuthService: FirebaseAuthService
 
     @Autowired
-    private lateinit var usuarioMapper: UsuarioMapper
-
-    @Autowired
     private lateinit var usuarioService: UsuarioService
 
-//    @GetMapping("/perfil")
-//    fun getUserProfile(
-//        authentication: Authentication
-//    ) : ResponseEntity<Usuario> {
-//        val usuario = usuarioService.getUsuarioFromToken(bearerToken)
-//        return ResponseEntity.ok(usuario)
-//    }
+    @GetMapping("/perfil")
+    fun getUserProfile(
+        authentication: Authentication
+    ) : ResponseEntity<UsuarioDTO> {
+        val uid = authentication.name
+        val usuario = usuarioService.obtenerUsuarioPorId(uid)
+
+        return ResponseEntity.ok(usuario)
+    }
+
+    @GetMapping("/biblioteca")
+    fun obtenerBibliotecaCompleta(
+        authentication: Authentication
+    ): ResponseEntity<UsuarioBibliotecaMostrableDTO> {
+        val uid = authentication.name
+        val usuario = usuarioService.obtenerUsuarioMostrable(uid)
+
+        return ResponseEntity.ok(usuario)
+    }
 
     @PostMapping("/register")
     fun registrarUsuario(
@@ -59,59 +70,5 @@ class UsuarioController {
         return ResponseEntity.ok(usuarioLogueado)
     }
 
-    // Muestra toda la biblioteca (liked songs, playlist, artist)
-//    @GetMapping("/biblioteca")
-//    fun getUserBiblioteca(
-//        authentication: Authentication
-//    ) : ResponseEntity<Biblioteca> {
-//        val usuario = usuarioService.getUsuarioFromToken(bearerToken)
-//        // Hacer
-//
-//        return ResponseEntity(null, HttpStatus.OK)
-//    }
-
-//    @PutMapping("/actualizar")
-//    fun updateUsername(
-//        authentication: Authentication,
-//        @RequestParam newUsername: String
-//    ) : ResponseEntity<Usuario> {
-//        val usuario = usuarioService.getUsuarioFromToken(bearerToken)
-//        // Hacer
-//
-//        return ResponseEntity(usuario, HttpStatus.OK)
-//    }
-
-    // Devuelve una lista de los nombres de las canciones que le has dado like
-//    @GetMapping("/liked-songs")
-//    fun getLikedSongs(
-//        authentication: Authentication
-//    ) : ResponseEntity<List<String>> {
-//        // Hacer
-//
-//        return ResponseEntity(listOf(), HttpStatus.OK)
-//    }
-
-    // El cliente solo necesita saber la confirmacion de la accion, ya sabe a que cancion le dio like
-//    @PostMapping("/liked-songs/agregar/{cancionId}")
-//    fun addLikedSong(
-//        authentication: Authentication,
-//        @PathVariable cancionId: String
-//    ) : ResponseEntity<UsuarioDTO> {
-//        val uid = authentication.name
-//        val usuarioDTOActualizado = usuarioService.addSongToFavs(uid, cancionId)
-//
-//        return ResponseEntity.ok(usuarioDTOActualizado)
-//    }
-
-
-//    @DeleteMapping("/liked-songs/quitar/{cancionId}")
-//    fun removeLikedSong(
-//        authentication: Authentication,
-//        @PathVariable cancionId: String
-//    ) : ResponseEntity<Void> {
-//        // Hacer
-//
-//        return ResponseEntity.noContent().build()
-//    }
 
 }

@@ -22,12 +22,14 @@ class SecurityConfig(private val firebaseFilter: FirebaseAuthenticationFilter) {
                 .requestMatchers("/usuario/register").permitAll()
                 .requestMatchers("/spotify/token").permitAll()
 
+                .requestMatchers(HttpMethod.GET, "/usuario/perfil").permitAll()
+
                 .requestMatchers(HttpMethod.GET, "/spotify/buscar/canciones").permitAll()
                 .requestMatchers(HttpMethod.GET, "/spotify/buscar/albumes").permitAll()
                 .requestMatchers(HttpMethod.GET, "/spotify/buscar/artistas").permitAll()
                 .requestMatchers(HttpMethod.GET, "/spotify/buscar/playlists").permitAll()
 
-                .requestMatchers(HttpMethod.POST, "/canciones/like/{cancionId}").permitAll()
+                .requestMatchers(HttpMethod.POST, "/canciones/like/{cancionId}").authenticated()
                 .requestMatchers(HttpMethod.DELETE, "/canciones/like/{cancionId}").permitAll()
 
                 .requestMatchers(HttpMethod.POST, "/artistas/like/{artistaId}").permitAll()
@@ -35,6 +37,9 @@ class SecurityConfig(private val firebaseFilter: FirebaseAuthenticationFilter) {
 
                 .requestMatchers(HttpMethod.POST, "/playlists/like/{playlistId}").permitAll()
                 .requestMatchers(HttpMethod.DELETE, "/playlists/like/{playlistId}").permitAll()
+
+                .requestMatchers(HttpMethod.POST, "/albumes/like/{albumId}").permitAll()
+                .requestMatchers(HttpMethod.DELETE, "/albumes/like/{albumId}").permitAll()
 
                 .anyRequest().authenticated()
             }
