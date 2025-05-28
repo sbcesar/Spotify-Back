@@ -38,6 +38,14 @@ class SecurityConfig(private val firebaseFilter: FirebaseAuthenticationFilter) {
                 .requestMatchers(HttpMethod.POST, "/playlists/like/{playlistId}").permitAll()
                 .requestMatchers(HttpMethod.DELETE, "/playlists/like/{playlistId}").permitAll()
 
+                .requestMatchers(HttpMethod.POST, "/playlists/crear").authenticated()
+                .requestMatchers(HttpMethod.GET, "/playlists/creadas").permitAll()
+                .requestMatchers(HttpMethod.PUT, "/playlists/{playlistId}/editar").authenticated()
+                .requestMatchers(HttpMethod.DELETE, "/playlists/{playlistId}").authenticated()
+
+                .requestMatchers(HttpMethod.POST, "/playlists/{playlistId}/agregarCancion/{cancionId}").authenticated()
+                .requestMatchers(HttpMethod.DELETE, "/playlists/{playlistId}/eliminarCancion/{cancionId}").authenticated()
+
                 .requestMatchers(HttpMethod.POST, "/albumes/like/{albumId}").permitAll()
                 .requestMatchers(HttpMethod.DELETE, "/albumes/like/{albumId}").permitAll()
 

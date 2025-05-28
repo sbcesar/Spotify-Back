@@ -1,5 +1,7 @@
 package com.example.spotifyapitfg.controller
 
+import com.example.spotifyapitfg.dto.PlaylistCreateDTO
+import com.example.spotifyapitfg.dto.PlaylistDTO
 import com.example.spotifyapitfg.dto.UsuarioDTO
 import com.example.spotifyapitfg.models.Playlist
 import com.example.spotifyapitfg.service.PlaylistService
@@ -24,7 +26,17 @@ class PlaylistController {
         @PathVariable id: String
     ): ResponseEntity<Playlist> {
         val playlist = spotifySearchService.buscarPlaylistPorId(id)
+
         return ResponseEntity.ok(playlist)
+    }
+
+    @GetMapping("/creadas")
+    fun obtenerPlaylistsCreadas(
+        authentication: Authentication
+    ): ResponseEntity<List<PlaylistDTO>> {
+        val uid = authentication.name
+        val creadas = playlistService.obtenerPlaylistsCreadasPorUsuario(uid)
+        return ResponseEntity.ok(creadas)
     }
 
     @PostMapping("/like/{playlistId}")
@@ -34,7 +46,66 @@ class PlaylistController {
     ): ResponseEntity<UsuarioDTO> {
         val uid = authentication.name
         val actualizado = playlistService.likePlaylist(uid, playlistId)
+
         return ResponseEntity.ok(actualizado)
+    }
+
+    @PostMapping("/crear")
+    fun crearPlaylist(
+        authentication: Authentication,
+        @RequestBody playlistCreateDTO: PlaylistCreateDTO
+    ): ResponseEntity<PlaylistDTO> {
+        val uid = authentication.name
+        val nuevaPlaylist = playlistService.crearPlaylist(uid, playlistCreateDTO)
+
+        return ResponseEntity.ok(nuevaPlaylist)
+    }
+
+    @PutMapping("/{playlistId}/editar")
+    fun editarPlaylist(
+        @PathVariable playlistId: String,
+        @RequestBody dto: PlaylistCreateDTO,
+        authentication: Authentication
+    ): ResponseEntity<PlaylistDTO> {
+        val uid = authentication.name
+        val modificada = playlistService.modificarPlaylist(uid, playlistId, dto)
+
+        return ResponseEntity.ok(modificada)
+    }
+
+    @DeleteMapping("/{playlistId}")
+    fun eliminarPlaylist(
+        @PathVariable playlistId: String,
+        authentication: Authentication
+    ): ResponseEntity<Void> {
+        val uid = authentication.name
+        playlistService.eliminarPlaylist(uid, playlistId)
+
+        return ResponseEntity.noContent().build()
+    }
+
+    @PutMapping("/{playlistId}/agregarCancion/{cancionId}")
+    fun agregarCancionAPlaylist(
+        @PathVariable playlistId: String,
+        @PathVariable cancionId: String,
+        authentication: Authentication
+    ): ResponseEntity<PlaylistDTO> {
+        val uid = authentication.name
+        val actualizada = playlistService.agregarCancion(playlistId, cancionId, uid)
+
+        return ResponseEntity.ok(actualizada)
+    }
+
+    @PutMapping("/{playlistId}/eliminarCancion/{cancionId}")
+    fun eliminarCancionDePlaylist(
+        @PathVariable playlistId: String,
+        @PathVariable cancionId: String,
+        authentication: Authentication
+    ): ResponseEntity<PlaylistDTO> {
+        val uid = authentication.name
+        val actualizada = playlistService.eliminarCancion(playlistId, cancionId, uid)
+
+        return ResponseEntity.ok(actualizada)
     }
 
     @DeleteMapping("/like/{playlistId}")
@@ -43,7 +114,8 @@ class PlaylistController {
         @PathVariable playlistId: String
     ): ResponseEntity<UsuarioDTO> {
         val uid = authentication.name
-        val actualizado = playlistService.likePlaylist(uid, playlistId)
+        val actualizado = playlistService.unlikePlaylist(uid, playlistId)
+
         return ResponseEntity.ok(actualizado)
     }
 }

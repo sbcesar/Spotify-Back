@@ -22,9 +22,9 @@ class SpotifyAuthService {
 
     fun obtenerTokenDeAcceso(): String {
 
-        println("🔐 clientId: $clientId")
-        println("🔐 clientSecret: $clientSecret")
-        println("🌐 tokenUrl: $tokenUrl")
+        println("clientId: $clientId")
+        println("clientSecret: $clientSecret")
+        println("tokenUrl: $tokenUrl")
 
         val restTemplate = RestTemplate()
 

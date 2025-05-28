@@ -2,7 +2,7 @@ package com.example.spotifyapitfg.service
 
 import com.example.spotifyapitfg.dto.UsuarioDTO
 import com.example.spotifyapitfg.error.exception.NotFoundException
-import com.example.spotifyapitfg.mapper.UsuarioMapper
+import com.example.spotifyapitfg.mapper.Mapper
 import com.example.spotifyapitfg.repository.UsuarioRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -14,7 +14,7 @@ class ArtistaService {
     private lateinit var usuarioRepository: UsuarioRepository
 
     @Autowired
-    private lateinit var usuarioMapper: UsuarioMapper
+    private lateinit var mapper: Mapper
 
     fun likeArtista(uid: String, artistId: String): UsuarioDTO {
         val usuario = usuarioRepository.findById(uid)
@@ -25,7 +25,7 @@ class ArtistaService {
             usuarioRepository.save(usuario)
         }
 
-        return usuarioMapper.toDTO(usuario)
+        return mapper.toDTO(usuario)
     }
 
     fun unlikeArtista(uid: String, artistId: String): UsuarioDTO {
@@ -37,6 +37,6 @@ class ArtistaService {
             usuarioRepository.save(usuario)
         }
 
-        return usuarioMapper.toDTO(usuario)
+        return mapper.toDTO(usuario)
     }
 }

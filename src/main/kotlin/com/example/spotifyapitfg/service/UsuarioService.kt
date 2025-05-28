@@ -1,11 +1,14 @@
 package com.example.spotifyapitfg.service
 
+import com.example.spotifyapitfg.dto.BibliotecaDTO
 import com.example.spotifyapitfg.dto.BibliotecaMostrableDTO
 import com.example.spotifyapitfg.dto.UsuarioBibliotecaMostrableDTO
 import com.example.spotifyapitfg.dto.UsuarioDTO
 import com.example.spotifyapitfg.error.exception.ConflictException
-import com.example.spotifyapitfg.mapper.UsuarioMapper
+import com.example.spotifyapitfg.mapper.Mapper
+import com.example.spotifyapitfg.models.Biblioteca
 import com.example.spotifyapitfg.models.Usuario
+import com.example.spotifyapitfg.repository.PlaylistRepository
 import com.example.spotifyapitfg.repository.UsuarioRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.core.userdetails.UsernameNotFoundException
@@ -21,16 +24,42 @@ class UsuarioService {
     private lateinit var spotifySearchService: SpotifySearchService
 
     @Autowired
+    private lateinit var playlistRepository: PlaylistRepository
+
+    @Autowired
     private lateinit var firebaseAuthService: FirebaseAuthService
 
     @Autowired
-    private lateinit var usuarioMapper: UsuarioMapper
+    private lateinit var mapper: Mapper
 
     fun obtenerUsuarioPorId(uid: String): UsuarioDTO {
         val usuario = usuarioRepository.findById(uid)
-            .orElseThrow { UsernameNotFoundException("Usuario no encontrado con ID: $uid") }
+            .orElseThrow { UsernameNotFoundException("Usuario no encontrado") }
 
-        return usuarioMapper.toDTO(usuario)
+        val biblioteca = usuario.biblioteca ?: Biblioteca()
+        val bibliotecaDTO = BibliotecaDTO(
+            playlistsCreadas = biblioteca.playlistsCreadas.toMutableList(),
+            likedCanciones = biblioteca.likedCanciones.toMutableList(),
+            likedPlaylists = biblioteca.likedPlaylists.toMutableList(),
+            likedArtistas = biblioteca.likedArtistas.toMutableList(),
+            likedAlbums = biblioteca.likedAlbums.toMutableList()
+        )
+
+        return UsuarioDTO(
+            id = usuario.id,
+            nombre = usuario.nombre,
+            email = usuario.email,
+            playlistCount = usuario.playlistCount,
+            seguidores = usuario.seguidores,
+            seguidos = usuario.seguidos,
+            biblioteca = bibliotecaDTO
+        )
+    }
+
+    fun obtenerNombrePorId(uid: String): String {
+        val usuario = usuarioRepository.findById(uid)
+            .orElseThrow { RuntimeException("Usuario no encontrado con ID: $uid") }
+        return usuario.nombre
     }
 
     fun obtenerUsuarioMostrable(uid: String): UsuarioBibliotecaMostrableDTO {
@@ -61,13 +90,15 @@ class UsuarioService {
             }
         }
 
-        val playlists = usuario.biblioteca.likedPlaylists.mapNotNull {
-            try {
-                spotifySearchService.buscarPlaylistPorId(it)
-            } catch (e: Exception) {
-                null
-            }
+        val likedPlaylists = usuario.biblioteca.likedPlaylists.mapNotNull {
+            try { spotifySearchService.buscarPlaylistPorId(it) } catch (e: Exception) { null }
         }
+
+        val creadasPlaylists = usuario.biblioteca.playlistsCreadas.mapNotNull {
+            try { playlistRepository.findById(it).orElse(null) } catch (e: Exception) { null }
+        }
+
+        val todasLasPlaylists = (likedPlaylists + creadasPlaylists).distinct()
 
         return UsuarioBibliotecaMostrableDTO(
             id = usuario.id!!,
@@ -80,7 +111,7 @@ class UsuarioService {
                 canciones = canciones,
                 artistas = artistas,
                 albumes = albumes,
-                playlists = playlists
+                playlists = todasLasPlaylists
             )
         )
     }
@@ -90,7 +121,7 @@ class UsuarioService {
 
         val usuarioGuardado = usuarioRepository.save(usuario)
 
-        return usuarioMapper.toDTO(usuarioGuardado)
+        return mapper.toDTO(usuarioGuardado)
     }
 
     fun login(idToken: String): UsuarioDTO {
@@ -99,7 +130,7 @@ class UsuarioService {
 
             val usuario = usuarioRepository.findById(uid).orElseThrow { UsernameNotFoundException("Usuario no encontrado en MongoDB") }
 
-            return usuarioMapper.toDTO(usuario)
+            return mapper.toDTO(usuario)
         } catch (e: Exception) {
             throw UsernameNotFoundException("No se pudo validar el token de Firebase: ${e.message}")
         }
