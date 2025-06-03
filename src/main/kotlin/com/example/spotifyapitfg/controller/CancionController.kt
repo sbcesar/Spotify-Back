@@ -27,6 +27,13 @@ class CancionController {
         return ResponseEntity.ok(cancion)
     }
 
+    @GetMapping("/all")
+    fun getCanciones(): ResponseEntity<List<Cancion>> {
+        val canciones = cancionService.obtenerCanciones()
+
+        return ResponseEntity.ok(canciones)
+    }
+
     @PostMapping("/like/{cancionId}")
     fun likeCancion(
         authentication: Authentication,

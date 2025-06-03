@@ -36,7 +36,7 @@ class UsuarioService {
         val usuario = usuarioRepository.findById(uid)
             .orElseThrow { UsernameNotFoundException("Usuario no encontrado") }
 
-        val biblioteca = usuario.biblioteca ?: Biblioteca()
+        val biblioteca = usuario.biblioteca
         val bibliotecaDTO = BibliotecaDTO(
             playlistsCreadas = biblioteca.playlistsCreadas.toMutableList(),
             likedCanciones = biblioteca.likedCanciones.toMutableList(),
@@ -52,7 +52,8 @@ class UsuarioService {
             playlistCount = usuario.playlistCount,
             seguidores = usuario.seguidores,
             seguidos = usuario.seguidos,
-            biblioteca = bibliotecaDTO
+            biblioteca = bibliotecaDTO,
+            role = usuario.role.toString()
         )
     }
 

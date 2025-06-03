@@ -30,6 +30,13 @@ class PlaylistController {
         return ResponseEntity.ok(playlist)
     }
 
+    @GetMapping("/todas")
+    fun obtenerTodasLasPlaylists(): ResponseEntity<List<PlaylistDTO>> {
+        val playlists = playlistService.obtenerTodas()
+
+        return ResponseEntity.ok(playlists)
+    }
+
     @GetMapping("/creadas")
     fun obtenerPlaylistsCreadas(
         authentication: Authentication

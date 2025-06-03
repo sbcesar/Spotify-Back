@@ -7,5 +7,6 @@ data class UsuarioDTO(
     val playlistCount: Int = 0,
     val seguidores: Int = 0,
     val seguidos: Int = 0,
-    val biblioteca: BibliotecaDTO? = null
+    val biblioteca: BibliotecaDTO? = null,
+    val role: String
 )

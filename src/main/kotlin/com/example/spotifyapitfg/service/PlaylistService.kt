@@ -31,6 +31,11 @@ class PlaylistService {
     @Autowired
     private lateinit var mapper: Mapper
 
+    fun obtenerTodas(): List<PlaylistDTO> {
+        val playlists = playlistRepository.findAll()
+        return playlists.map { mapper.toDTO(it) }
+    }
+
     fun obtenerPlaylistsCreadasPorUsuario(uid: String): List<PlaylistDTO> {
         val playlists = playlistRepository.findByCreadorId(uid)
         return playlists.map { mapper.toDTO(it) }

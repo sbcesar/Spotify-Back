@@ -4,6 +4,7 @@ import com.example.spotifyapitfg.models.Album
 import com.example.spotifyapitfg.models.Artista
 import com.example.spotifyapitfg.models.Cancion
 import com.example.spotifyapitfg.models.Playlist
+import com.example.spotifyapitfg.repository.CancionRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.*
@@ -16,6 +17,9 @@ class SpotifySearchService {
 
     @Autowired
     private lateinit var authService: SpotifyAuthService
+
+    @Autowired
+    private lateinit var cancionRepository: CancionRepository
 
     @Value("\${spotify.api.searchUrl}")
     lateinit var searchUrl: String
@@ -63,7 +67,10 @@ class SpotifySearchService {
         // Extrae la lista
         val tracks = ((response.body?.get("tracks") as? Map<*, *>)?.get("items") as? List<*>) ?: return emptyList()
 
-        return tracks.mapNotNull { parseCancion(it as Map<*, *>) }
+        return tracks
+            .filterIsInstance<Map<*, *>>()
+            .filter { it["type"] == "track" }
+            .mapNotNull { parseCancion(it) }
     }
 
     private fun parseCancion(data: Map<*, *>): Cancion {
@@ -75,12 +82,15 @@ class SpotifySearchService {
             val previewUrl = data["preview_url"] as? String
             val urlSpotify = (data["external_urls"] as Map<*, *>)["spotify"] as String
 
-            val artista = ((data["artists"] as List<*>).firstOrNull() as? Map<*, *>)?.get("name") as String
+            val artista = ((data["artists"] as? List<*>)?.firstOrNull() as? Map<*, *>)?.get("name") as? String ?: "Desconocido"
+
             val albumMap = data["album"] as Map<*, *>
             val albumNombre = albumMap["name"] as String
             val imagenUrl = (albumMap["images"] as List<*>?)?.firstOrNull()?.let {
                 (it as Map<*, *>)["url"] as? String
             }
+
+            val audioUrl: String? = null
 
             Cancion(
                 id = id,
@@ -91,10 +101,12 @@ class SpotifySearchService {
                 duracionMs = duracionMs,
                 previewUrl = previewUrl,
                 popularidad = popularidad,
-                urlSpotify = urlSpotify
+                urlSpotify = urlSpotify,
+                audioUrl = audioUrl
             )
         } catch (e: Exception) {
             println("Error al parsear canción: ${e.message}")
+            println("➡️ Data recibida: $data")
             throw RuntimeException("Error al parsear canción")
         }
     }

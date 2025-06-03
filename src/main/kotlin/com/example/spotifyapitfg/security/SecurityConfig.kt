@@ -29,6 +29,7 @@ class SecurityConfig(private val firebaseFilter: FirebaseAuthenticationFilter) {
                 .requestMatchers(HttpMethod.GET, "/spotify/buscar/artistas").permitAll()
                 .requestMatchers(HttpMethod.GET, "/spotify/buscar/playlists").permitAll()
 
+                .requestMatchers(HttpMethod.GET, "/canciones/all").permitAll()
                 .requestMatchers(HttpMethod.POST, "/canciones/like/{cancionId}").authenticated()
                 .requestMatchers(HttpMethod.DELETE, "/canciones/like/{cancionId}").permitAll()
 
@@ -37,9 +38,9 @@ class SecurityConfig(private val firebaseFilter: FirebaseAuthenticationFilter) {
 
                 .requestMatchers(HttpMethod.POST, "/playlists/like/{playlistId}").permitAll()
                 .requestMatchers(HttpMethod.DELETE, "/playlists/like/{playlistId}").permitAll()
-
                 .requestMatchers(HttpMethod.POST, "/playlists/crear").authenticated()
-                .requestMatchers(HttpMethod.GET, "/playlists/creadas").permitAll()
+                .requestMatchers(HttpMethod.GET, "/playlists/creadas").authenticated()
+                .requestMatchers(HttpMethod.GET, "/playlists/todas").permitAll()
                 .requestMatchers(HttpMethod.PUT, "/playlists/{playlistId}/editar").authenticated()
                 .requestMatchers(HttpMethod.DELETE, "/playlists/{playlistId}").authenticated()
 

@@ -14,5 +14,6 @@ data class Cancion(
     val duracionMs: Int,
     val previewUrl: String?,
     val popularidad: Int,
-    val urlSpotify: String
+    val urlSpotify: String,
+    val audioUrl: String? = null
 )
