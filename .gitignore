@@ -1,6 +1,7 @@
 HELP.md
 .gradle
-build/
+build/*
+!build/libs/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
@@ -39,6 +40,5 @@ out/
 ### Kotlin ###
 .kotlin
 
-### claves y variables de entorno
-*.pem
+### variables de entorno
 *.env.properties
