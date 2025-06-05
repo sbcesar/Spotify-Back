@@ -63,6 +63,29 @@ class PlaylistService {
         return mapper.toDTO(playlist)
     }
 
+    fun mezclarPlaylists(id1: String, id2: String, creadorUid: String): PlaylistDTO {
+        val playlist1 = playlistRepository.findById(id1).orElseThrow { RuntimeException("Playlist 1 no encontrada") }
+        val playlist2 = playlistRepository.findById(id2).orElseThrow { RuntimeException("Playlist 2 no encontrada") }
+
+        val usuario = usuarioRepository.findById(creadorUid).orElseThrow { RuntimeException("Usuario no encontrado") }
+
+        val cancionesTotales = (playlist1.canciones + playlist2.canciones).distinct().shuffled().take(20)
+
+        val mixedPlaylist = Playlist(
+            id = UUID.randomUUID().toString(),
+            nombre = "Mezcla de ${playlist1.nombre} y ${playlist2.nombre}",
+            descripcion = "Generada automáticamente a partir de 2 playlists.",
+            canciones = cancionesTotales.toMutableList(),
+            creadorId = creadorUid,
+            creadorNombre = usuario.nombre,
+            imagenUrl = playlist1.imagenUrl ?: playlist2.imagenUrl ?: "",
+        )
+
+        playlistRepository.save(mixedPlaylist)
+
+        return mapper.toDTO(mixedPlaylist)
+    }
+
     fun modificarPlaylist(uid: String, id: String, dto: PlaylistCreateDTO): PlaylistDTO {
         val playlist = playlistRepository.findById(id)
             .orElseThrow { NotFoundException("Playlist no encontrada") }

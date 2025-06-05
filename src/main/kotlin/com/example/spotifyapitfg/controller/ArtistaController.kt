@@ -43,7 +43,7 @@ class ArtistaController {
         @PathVariable artistaId: String
     ): ResponseEntity<UsuarioDTO> {
         val uid = authentication.name
-        val actualizado = artistaService.likeArtista(uid, artistaId)
+        val actualizado = artistaService.unlikeArtista(uid, artistaId)
         return ResponseEntity.ok(actualizado)
     }
 }

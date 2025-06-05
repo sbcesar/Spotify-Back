@@ -44,7 +44,7 @@ class AlbumController {
         @PathVariable albumId: String
     ): ResponseEntity<UsuarioDTO> {
         val uid = authentication.name
-        val actualizado = albumService.likeAlbum(uid, albumId)
+        val actualizado = albumService.unlikeAlbum(uid, albumId)
         return ResponseEntity.ok(actualizado)
     }
 }

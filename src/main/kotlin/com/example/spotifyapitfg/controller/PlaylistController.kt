@@ -1,5 +1,6 @@
 package com.example.spotifyapitfg.controller
 
+import com.example.spotifyapitfg.dto.Mix
 import com.example.spotifyapitfg.dto.PlaylistCreateDTO
 import com.example.spotifyapitfg.dto.PlaylistDTO
 import com.example.spotifyapitfg.dto.UsuarioDTO
@@ -66,6 +67,17 @@ class PlaylistController {
         val nuevaPlaylist = playlistService.crearPlaylist(uid, playlistCreateDTO)
 
         return ResponseEntity.ok(nuevaPlaylist)
+    }
+
+    @PostMapping("/mix")
+    fun mezclarPlaylists(
+        @RequestBody playlistsIds: Mix,
+        authentication: Authentication
+    ): ResponseEntity<PlaylistDTO> {
+        val uid = authentication.name
+        val mixedPlaylist = playlistService.mezclarPlaylists(playlistsIds.playlistId1, playlistsIds.playlistId2, uid)
+
+        return ResponseEntity.ok(mixedPlaylist)
     }
 
     @PutMapping("/{playlistId}/editar")
