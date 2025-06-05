@@ -9,7 +9,9 @@ import java.io.FileInputStream
 @Configuration
 class FirebaseInitializer {
     init {
-        val serviceAccount = FileInputStream("src/main/resources/spotifyapitfg-firebase-adminsdk-fbsvc-a00762cadd.json")
+        val serviceAccount = this::class.java.classLoader.getResourceAsStream("spotifyapitfg-firebase-adminsdk-fbsvc-a00762cadd.json")
+            ?: throw IllegalStateException("Firebase credentials file not found in classpath")
+
 
         val options = FirebaseOptions.builder()
             .setCredentials(GoogleCredentials.fromStream(serviceAccount))
