@@ -11,6 +11,7 @@ import com.example.spotifyapitfg.repository.PlaylistRepository
 import com.example.spotifyapitfg.repository.UsuarioRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import org.springframework.http.*
 import java.util.*
 
 @Service
@@ -27,6 +28,9 @@ class PlaylistService {
 
     @Autowired
     private lateinit var firebaseAuthService: FirebaseAuthService
+
+    @Autowired
+    private lateinit var authService: SpotifyAuthService
 
     @Autowired
     private lateinit var mapper: Mapper
@@ -64,13 +68,33 @@ class PlaylistService {
     }
 
     fun mezclarPlaylists(id1: String, id2: String, creadorUid: String): PlaylistDTO {
-        val playlist1 = playlistRepository.findById(id1).orElseThrow { RuntimeException("Playlist 1 no encontrada") }
-        val playlist2 = playlistRepository.findById(id2).orElseThrow { RuntimeException("Playlist 2 no encontrada") }
+        val usuario = usuarioRepository.findById(creadorUid)
+            .orElseThrow { RuntimeException("Usuario no encontrado") }
 
-        val usuario = usuarioRepository.findById(creadorUid).orElseThrow { RuntimeException("Usuario no encontrado") }
+        val token = authService.obtenerTokenDeAcceso()
+        val headers = HttpHeaders().apply { setBearerAuth(token) }
 
-        val cancionesTotales = (playlist1.canciones + playlist2.canciones).distinct().shuffled().take(20)
+        // Buscar playlist 1
+        val playlist1: Playlist = playlistRepository.findById(id1).orElse(null)
+            ?: if (usuario.biblioteca.likedPlaylists.contains(id1)) {
+                spotifySearchService.buscarPlaylistSpotifyComoLocal(id1, headers)
+            } else null
+                ?: throw RuntimeException("Playlist 1 no encontrada o no permitida")
 
+        // Buscar playlist 2
+        val playlist2: Playlist = playlistRepository.findById(id2).orElse(null)
+            ?: if (usuario.biblioteca.likedPlaylists.contains(id2)) {
+                spotifySearchService.buscarPlaylistSpotifyComoLocal(id2, headers)
+            } else null
+                ?: throw RuntimeException("Playlist 2 no encontrada o no permitida")
+
+        // Mezclar canciones (máximo 20)
+        val cancionesTotales = (playlist1.canciones + playlist2.canciones)
+            .distinctBy { it.id }
+            .shuffled()
+            .take(20)
+
+        // Crear nueva playlist
         val mixedPlaylist = Playlist(
             id = UUID.randomUUID().toString(),
             nombre = "Mezcla de ${playlist1.nombre} y ${playlist2.nombre}",
@@ -78,10 +102,15 @@ class PlaylistService {
             canciones = cancionesTotales.toMutableList(),
             creadorId = creadorUid,
             creadorNombre = usuario.nombre,
-            imagenUrl = playlist1.imagenUrl ?: playlist2.imagenUrl ?: "",
+            imagenUrl = playlist1.imagenUrl ?: playlist2.imagenUrl ?: ""
         )
 
+        // Guardar nueva playlist
         playlistRepository.save(mixedPlaylist)
+
+        // Asociar al usuario como creador
+        usuario.biblioteca.playlistsCreadas.add(mixedPlaylist.id!!)
+        usuarioRepository.save(usuario)
 
         return mapper.toDTO(mixedPlaylist)
     }

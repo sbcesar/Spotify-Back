@@ -1,10 +1,10 @@
 package com.example.spotifyapitfg.service
 
+import com.example.spotifyapitfg.error.exception.NotFoundException
 import com.example.spotifyapitfg.models.Album
 import com.example.spotifyapitfg.models.Artista
 import com.example.spotifyapitfg.models.Cancion
 import com.example.spotifyapitfg.models.Playlist
-import com.example.spotifyapitfg.repository.CancionRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.*
@@ -17,9 +17,6 @@ class SpotifySearchService {
 
     @Autowired
     private lateinit var authService: SpotifyAuthService
-
-    @Autowired
-    private lateinit var cancionRepository: CancionRepository
 
     @Value("\${spotify.api.searchUrl}")
     lateinit var searchUrl: String
@@ -39,6 +36,37 @@ class SpotifySearchService {
         val track = response.body ?: throw RuntimeException("No se encontró la canción")
 
         return parseCancion(track as Map<*, *>)
+    }
+
+    fun buscarPlaylistSpotifyComoLocal(playlistId: String, headers: HttpHeaders): Playlist {
+        println("Recuperando playlist externa de Spotify: $playlistId")
+
+        val playlistUrl = "https://api.spotify.com/v1/playlists/$playlistId"
+        val playlistEntity = HttpEntity<String>(headers)
+
+        val playlistResponse = restTemplate.exchange(
+            playlistUrl,
+            HttpMethod.GET,
+            playlistEntity,
+            Map::class.java
+        )
+
+        val playlistBody = playlistResponse.body ?: throw NotFoundException("No se encontró la playlist")
+
+        val nombre = playlistBody["name"] as? String ?: "Playlist externa"
+        val descripcion = playlistBody["description"] as? String ?: "Playlist obtenida desde Spotify"
+
+        val canciones = obtenerCancionesDePlaylist(playlistId, headers)
+
+        return Playlist(
+            id = playlistId,
+            nombre = nombre,
+            descripcion = descripcion,
+            canciones = canciones,
+            creadorId = "spotify",
+            creadorNombre = "Spotify",
+            imagenUrl = canciones.firstOrNull()?.imagenUrl ?: ""
+        )
     }
 
     fun buscarCanciones(query: String): List<Cancion> {
@@ -295,7 +323,6 @@ class SpotifySearchService {
     }
 
     fun obtenerCancionesDePlaylist(playlistId: String, headers: HttpHeaders): List<Cancion> {
-        val restTemplate = RestTemplate()
         val uri = "https://api.spotify.com/v1/playlists/$playlistId/tracks"
         val entity = HttpEntity<String>(headers)
         val response = restTemplate.exchange(uri, HttpMethod.GET, entity, Map::class.java)
