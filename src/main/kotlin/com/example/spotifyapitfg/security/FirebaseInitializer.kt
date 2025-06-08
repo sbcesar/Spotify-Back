@@ -9,8 +9,10 @@ import java.io.FileInputStream
 @Configuration
 class FirebaseInitializer {
     init {
-        val serviceAccount = this::class.java.classLoader.getResourceAsStream("spotifyapitfg-firebase-adminsdk-fbsvc-af89212f87.json")
-            ?: throw IllegalStateException("Firebase credentials file not found in classpath")
+        val path = System.getenv("FIREBASE_CONFIG_PATH")
+            ?: throw IllegalStateException("FIREBASE_CONFIG_PATH environment variable not set")
+
+        val serviceAccount = FileInputStream(path)
 
 
         val options = FirebaseOptions.builder()
