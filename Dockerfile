@@ -1,5 +1,5 @@
 FROM gradle:8.4.0-jdk17 AS builder
-COPY --no-cache . /app
+COPY . /app
 WORKDIR /app
 RUN gradle build --no-daemon
 
