@@ -15,15 +15,18 @@ class StripeService {
     @Value("\${stripe.cancel.url}")
     private lateinit var cancelUrl: String
 
-    fun crearSesionPago(usuarioId: String): String {
+    @Value("\${stripe.subscription.plan.id}")
+    private lateinit var subscriptionPlanId: String
+
+    fun crearSesionSuscripcion(usuarioId: String): String {
         val sessionParams = SessionCreateParams.builder()
-            .setMode(SessionCreateParams.Mode.PAYMENT)
+            .setMode(SessionCreateParams.Mode.SUBSCRIPTION)
             .setSuccessUrl("$successUrl?session_id={CHECKOUT_SESSION_ID}")
             .setCancelUrl(cancelUrl)
             .setCustomerEmail(null)
             .addLineItem(
                 SessionCreateParams.LineItem.builder()
-                    .setPrice("price_1234567890")
+                    .setPrice(subscriptionPlanId)
                     .setQuantity(1L)
                     .build()
             )

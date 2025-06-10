@@ -34,7 +34,7 @@ class StripeController {
         authentication: Authentication
     ): ResponseEntity<Map<String, String>> {
         val uid = authentication.name
-        val checkoutUrl = stripeService.crearSesionPago(uid)
+        val checkoutUrl = stripeService.crearSesionSuscripcion(uid)
 
         return ResponseEntity.ok(mapOf("url" to checkoutUrl))
     }
