@@ -13,5 +13,5 @@ data class Usuario(
     val seguidores: Int = 0,
     val seguidos: Int = 0,
     val biblioteca: Biblioteca = Biblioteca(),  // Guarda los gustos del usuario
-    val role: Role? = Role.USER
+    var role: Role? = Role.USER
 )

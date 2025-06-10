@@ -43,6 +43,7 @@ class SecurityConfig(private val firebaseFilter: FirebaseAuthenticationFilter) {
                 .requestMatchers(HttpMethod.GET, "/playlists/todas").permitAll()
                 .requestMatchers(HttpMethod.PUT, "/playlists/{playlistId}/editar").authenticated()
                 .requestMatchers(HttpMethod.DELETE, "/playlists/{playlistId}").authenticated()
+                .requestMatchers(HttpMethod.POST, "/playlists/mix").hasAnyRole("PREMIUM", "ADMIN")
 
                 .requestMatchers(HttpMethod.POST, "/playlists/{playlistId}/agregarCancion/{cancionId}").authenticated()
                 .requestMatchers(HttpMethod.DELETE, "/playlists/{playlistId}/eliminarCancion/{cancionId}").authenticated()

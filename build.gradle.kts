@@ -36,6 +36,7 @@ dependencies {
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	implementation("com.google.firebase:firebase-admin:9.2.0")
 	implementation("org.mapstruct:mapstruct:1.5.5.Final")
+	implementation("com.stripe:stripe-java:29.2.0")
 
 	kapt("org.mapstruct:mapstruct-processor:1.5.5.Final")
 	developmentOnly("org.springframework.boot:spring-boot-devtools")
