@@ -5,8 +5,10 @@ import com.example.spotifyapitfg.dto.BibliotecaMostrableDTO
 import com.example.spotifyapitfg.dto.UsuarioBibliotecaMostrableDTO
 import com.example.spotifyapitfg.dto.UsuarioDTO
 import com.example.spotifyapitfg.error.exception.ConflictException
+import com.example.spotifyapitfg.error.exception.NotFoundException
 import com.example.spotifyapitfg.mapper.Mapper
 import com.example.spotifyapitfg.models.Biblioteca
+import com.example.spotifyapitfg.models.Role
 import com.example.spotifyapitfg.models.Usuario
 import com.example.spotifyapitfg.repository.PlaylistRepository
 import com.example.spotifyapitfg.repository.UsuarioRepository
@@ -137,4 +139,12 @@ class UsuarioService {
         }
     }
 
+    fun actualizarPremium(usuarioId: String) {
+        val usuario = usuarioRepository.findById(usuarioId).orElseThrow { NotFoundException("Usuario no encontrado") }
+
+        usuario?.let {
+            it.role = Role.PREMIUM
+            usuarioRepository.save(it)
+        }
+    }
 }

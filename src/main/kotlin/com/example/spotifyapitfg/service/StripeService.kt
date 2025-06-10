@@ -1,6 +1,7 @@
 package com.example.spotifyapitfg.service
 
 import com.stripe.model.checkout.Session
+import com.stripe.net.Webhook
 import com.stripe.param.checkout.SessionCreateParams
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
@@ -32,4 +33,6 @@ class StripeService {
         val session = Session.create(sessionParams)
         return session.url
     }
+
+    fun verificarEvento(payload: String, sigHeader: String, secret: String) = Webhook.constructEvent(payload, sigHeader, secret)
 }

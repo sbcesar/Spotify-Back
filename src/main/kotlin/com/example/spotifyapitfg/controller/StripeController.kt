@@ -3,6 +3,7 @@ package com.example.spotifyapitfg.controller
 import com.example.spotifyapitfg.models.Role
 import com.example.spotifyapitfg.repository.UsuarioRepository
 import com.example.spotifyapitfg.service.StripeService
+import com.example.spotifyapitfg.service.UsuarioService
 import com.stripe.net.Webhook
 
 import org.springframework.beans.factory.annotation.Autowired
@@ -20,7 +21,7 @@ class StripeController {
     private lateinit var stripeService: StripeService
 
     @Autowired
-    private lateinit var usuarioRepository: UsuarioRepository
+    private lateinit var usuarioService: UsuarioService
 
     @Value("\${stripe.webhook.secret}")
     private lateinit var webhookSecret: String
@@ -43,33 +44,21 @@ class StripeController {
      */
     @PostMapping("/webhook")
     fun manejarWebhook(
-        @RequestBody playload: String,
+        @RequestBody payload: String,
         @RequestHeader("Stripe-Signature") sigHeader: String
     ): ResponseEntity<String> {
         val event = try {
-            Webhook.constructEvent(playload, sigHeader, webhookSecret)
+            stripeService.verificarEvento(payload, sigHeader, webhookSecret)
         } catch (e: Exception) {
-            return ResponseEntity.badRequest().body("Webhook no verificado ${e.message}")
+            return ResponseEntity.badRequest().body("Webhook inválido: ${e.message}")
         }
 
         if (event.type == "checkout.session.completed") {
-            val session = event.data?.`object` as Map<String, Any>
-
-            val metadata = session["metadata"] as? Map<String, Any>
-
+            val session = event.data?.`object` as Map<*, *>
+            val metadata = session["metadata"] as? Map<*, *>
             val usuarioId = metadata?.get("usuarioId") as? String
-
-            if (!usuarioId.isNullOrEmpty()) {
-                // Buscar al usuario en la base de datos usando el usuarioId
-                val usuario = usuarioRepository.findById(usuarioId.toString()).orElse(null)
-                if (usuario != null) {
-                    // Si el usuario existe, actualizar su rol a PREMIUM
-                    usuario.role = Role.PREMIUM
-                    usuarioRepository.save(usuario)
-                    println("Usuario $usuarioId actualizado a PREMIUM")
-                } else {
-                    println("Usuario no encontrado para ID: $usuarioId")
-                }
+            usuarioId?.let {
+                usuarioService.actualizarPremium(it)
             }
         }
 
