@@ -12,6 +12,7 @@ class StripeInitializer(
 
     @PostConstruct
     fun init() {
+        println("Stripe Secret Key: $secretKey")
         Stripe.apiKey = secretKey
     }
 
