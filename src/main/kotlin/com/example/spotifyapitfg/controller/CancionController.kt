@@ -9,6 +9,12 @@ import org.springframework.http.ResponseEntity
 import org.springframework.security.core.Authentication
 import org.springframework.web.bind.annotation.*
 
+/**
+ * Controlador REST para gestionar operaciones relacionadas con canciones.
+ *
+ * @property cancionService Servicio para manejar las canciones del sistema.
+ * @property spotifySearchService Servicio para buscar canciones en Spotify.
+ */
 @RestController
 @RequestMapping("/canciones")
 class CancionController {
@@ -19,6 +25,12 @@ class CancionController {
     @Autowired
     private lateinit var spotifySearchService: SpotifySearchService
 
+    /**
+     * Obtiene los detalles de una canción por su ID.
+     *
+     * @param id ID de la canción en Spotify.
+     * @return La canción encontrada envuelta en un [ResponseEntity].
+     */
     @GetMapping("/{id}")
     fun obtenerCancionPorId(
         @PathVariable id: String
@@ -27,6 +39,11 @@ class CancionController {
         return ResponseEntity.ok(cancion)
     }
 
+    /**
+     * Devuelve una lista de todas las canciones almacenadas.
+     *
+     * @return Lista de canciones.
+     */
     @GetMapping("/all")
     fun getCanciones(): ResponseEntity<List<Cancion>> {
         val canciones = cancionService.obtenerCanciones()
@@ -34,6 +51,13 @@ class CancionController {
         return ResponseEntity.ok(canciones)
     }
 
+    /**
+     * Permite al usuario marcar una canción como favorita.
+     *
+     * @param authentication Información del usuario autenticado.
+     * @param cancionId ID de la canción a marcar como favorita.
+     * @return Usuario actualizado con la canción en su lista de favoritos.
+     */
     @PostMapping("/like/{cancionId}")
     fun likeCancion(
         authentication: Authentication,
@@ -44,6 +68,13 @@ class CancionController {
         return ResponseEntity.ok(actualizado)
     }
 
+    /**
+     * Permite al usuario quitar una canción de sus favoritos.
+     *
+     * @param authentication Información del usuario autenticado.
+     * @param cancionId ID de la canción a quitar de favoritos.
+     * @return Usuario actualizado sin la canción en favoritos.
+     */
     @DeleteMapping("/like/{cancionId}")
     fun unlikeCancion(
         authentication: Authentication,

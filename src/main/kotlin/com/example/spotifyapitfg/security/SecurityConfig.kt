@@ -18,7 +18,7 @@ class SecurityConfig(private val firebaseFilter: FirebaseAuthenticationFilter) {
         http
             .csrf { it.disable() }
             .authorizeHttpRequests { auth -> auth
-                // Poner todos los permisos
+
                 .requestMatchers("/usuario/register").permitAll()
                 .requestMatchers("/spotify/token").permitAll()
 

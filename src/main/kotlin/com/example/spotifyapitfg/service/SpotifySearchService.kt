@@ -12,6 +12,15 @@ import org.springframework.stereotype.Service
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.util.UriComponentsBuilder
 
+/**
+ * Servicio encargado de interactuar con la API pública de Spotify para realizar búsquedas de
+ * canciones, álbumes, artistas y playlists, así como obtener detalles de recursos por ID.
+ *
+ * Utiliza el flujo de autenticación de cliente y los endpoints REST de Spotify.
+ *
+ * @property authService Servicio que proporciona tokens de acceso para autenticar peticiones a Spotify.
+ * @property searchUrl URL base de búsqueda de Spotify, definida en las propiedades del proyecto.
+ */
 @Service
 class SpotifySearchService {
 
@@ -23,6 +32,12 @@ class SpotifySearchService {
 
     private val restTemplate = RestTemplate()
 
+    /**
+     * Busca una canción en Spotify por su ID.
+     *
+     * @param id ID de la canción en Spotify.
+     * @return [Cancion] con los datos recuperados de la API.
+     */
     fun buscarCancionPorId(id: String): Cancion {
         val token = authService.obtenerTokenDeAcceso()
         val url = "https://api.spotify.com/v1/tracks/$id"
@@ -38,6 +53,14 @@ class SpotifySearchService {
         return parseCancion(track as Map<*, *>)
     }
 
+    /**
+     * Recupera una playlist desde Spotify y la adapta al modelo local.
+     * Este metodo se utiliza cuando la playlist no existe localmente, pero ha sido marcada como "like".
+     *
+     * @param playlistId ID de la playlist en Spotify.
+     * @param headers Encabezados HTTP con token de autenticación.
+     * @return [Playlist] con estructura local.
+     */
     fun buscarPlaylistSpotifyComoLocal(playlistId: String, headers: HttpHeaders): Playlist {
         println("Recuperando playlist externa de Spotify: $playlistId")
 
@@ -69,6 +92,12 @@ class SpotifySearchService {
         )
     }
 
+    /**
+     * Busca canciones que coincidan con el término dado.
+     *
+     * @param query Término de búsqueda.
+     * @return Lista de [Cancion] que coinciden con la consulta.
+     */
     fun buscarCanciones(query: String): List<Cancion> {
 
         // Obtiene un token para poder usar el endpoint
@@ -139,6 +168,12 @@ class SpotifySearchService {
         }
     }
 
+    /**
+     * Busca un álbum por su ID en Spotify.
+     *
+     * @param id ID del álbum.
+     * @return [Album] con información básica.
+     */
     fun buscarAlbumPorId(id: String): Album {
         val token = authService.obtenerTokenDeAcceso()
         val url = "https://api.spotify.com/v1/albums/$id"
@@ -154,6 +189,12 @@ class SpotifySearchService {
         return parseAlbum(data as Map<*, *>)
     }
 
+    /**
+     * Busca álbumes en Spotify que coincidan con el término dado.
+     *
+     * @param query Término de búsqueda.
+     * @return Lista de [Album] encontrados.
+     */
     fun buscarAlbumes(query: String): List<Album> {
         val token = authService.obtenerTokenDeAcceso()
 
@@ -201,6 +242,12 @@ class SpotifySearchService {
         )
     }
 
+    /**
+     * Busca un artista en Spotify por su ID.
+     *
+     * @param id ID del artista.
+     * @return [Artista] con los datos obtenidos.
+     */
     fun buscarArtistaPorId(id: String): Artista {
         val token = authService.obtenerTokenDeAcceso()
         val url = "https://api.spotify.com/v1/artists/$id"
@@ -216,6 +263,12 @@ class SpotifySearchService {
         return parseArtista(data as Map<*, *>)
     }
 
+    /**
+     * Busca artistas en Spotify que coincidan con el término dado.
+     *
+     * @param query Término de búsqueda.
+     * @return Lista de [Artista] encontrados.
+     */
     fun buscarArtistas(query: String): List<Artista> {
         val token = authService.obtenerTokenDeAcceso()
 
@@ -260,6 +313,12 @@ class SpotifySearchService {
         )
     }
 
+    /**
+     * Busca una playlist en Spotify por su ID.
+     *
+     * @param id ID de la playlist.
+     * @return [Playlist] con los datos obtenidos.
+     */
     fun buscarPlaylistPorId(id: String): Playlist {
         val token = authService.obtenerTokenDeAcceso()
         val url = "https://api.spotify.com/v1/playlists/$id"
@@ -276,6 +335,12 @@ class SpotifySearchService {
         return parsePlaylist(data as Map<*, *>, headers)
     }
 
+    /**
+     * Busca playlists públicas en Spotify que coincidan con el término dado.
+     *
+     * @param query Término de búsqueda.
+     * @return Lista de [Playlist] encontradas.
+     */
     fun buscarPlaylists(query: String): List<Playlist> {
         val token = authService.obtenerTokenDeAcceso()
 
@@ -322,6 +387,13 @@ class SpotifySearchService {
         )
     }
 
+    /**
+     * Obtiene las canciones incluidas en una playlist específica de Spotify.
+     *
+     * @param playlistId ID de la playlist.
+     * @param headers Encabezados con autorización.
+     * @return Lista de [Cancion] que pertenecen a la playlist.
+     */
     fun obtenerCancionesDePlaylist(playlistId: String, headers: HttpHeaders): List<Cancion> {
         val uri = "https://api.spotify.com/v1/playlists/$playlistId/tracks"
         val entity = HttpEntity<String>(headers)

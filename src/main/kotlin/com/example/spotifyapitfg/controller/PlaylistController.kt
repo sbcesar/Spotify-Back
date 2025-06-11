@@ -12,6 +12,12 @@ import org.springframework.http.ResponseEntity
 import org.springframework.security.core.Authentication
 import org.springframework.web.bind.annotation.*
 
+/**
+ * Controlador REST para gestionar operaciones sobre playlists, como creación, edición, mezcla, y likes.
+ *
+ * @property playlistService Servicio para gestionar las playlists de los usuarios.
+ * @property spotifySearchService Servicio para buscar playlists en Spotify.
+ */
 @RestController
 @RequestMapping("/playlists")
 class PlaylistController {
@@ -22,6 +28,12 @@ class PlaylistController {
     @Autowired
     private lateinit var spotifySearchService: SpotifySearchService
 
+    /**
+     * Obtiene una playlist por su ID.
+     *
+     * @param id ID de la playlist.
+     * @return Objeto [Playlist] con sus detalles.
+     */
     @GetMapping("/{id}")
     fun obtenerPlaylistPorId(
         @PathVariable id: String
@@ -31,6 +43,11 @@ class PlaylistController {
         return ResponseEntity.ok(playlist)
     }
 
+    /**
+     * Obtiene todas las playlists del sistema (creadas por usuarios).
+     *
+     * @return Lista de objetos [PlaylistDTO].
+     */
     @GetMapping("/todas")
     fun obtenerTodasLasPlaylists(): ResponseEntity<List<PlaylistDTO>> {
         val playlists = playlistService.obtenerTodas()
@@ -38,6 +55,12 @@ class PlaylistController {
         return ResponseEntity.ok(playlists)
     }
 
+    /**
+     * Obtiene todas las playlists creadas por el usuario autenticado.
+     *
+     * @param authentication Información del usuario autenticado.
+     * @return Lista de playlists del usuario.
+     */
     @GetMapping("/creadas")
     fun obtenerPlaylistsCreadas(
         authentication: Authentication
@@ -47,6 +70,13 @@ class PlaylistController {
         return ResponseEntity.ok(creadas)
     }
 
+    /**
+     * Permite al usuario marcar una playlist como favorita.
+     *
+     * @param authentication Información del usuario autenticado.
+     * @param cancionId ID de la playlist a marcar como favorita.
+     * @return Usuario actualizado con la playlist en su lista de favoritos.
+     */
     @PostMapping("/like/{playlistId}")
     fun likePlaylist(
         authentication: Authentication,
@@ -58,6 +88,13 @@ class PlaylistController {
         return ResponseEntity.ok(actualizado)
     }
 
+    /**
+     * Crea una nueva playlist personalizada por el usuario.
+     *
+     * @param authentication Información del usuario autenticado.
+     * @param playlistCreateDTO Objeto PlaylistCreateDTO.
+     * @return Nueva playlist personalizada.
+     */
     @PostMapping("/crear")
     fun crearPlaylist(
         authentication: Authentication,
@@ -69,6 +106,13 @@ class PlaylistController {
         return ResponseEntity.ok(nuevaPlaylist)
     }
 
+    /**
+     * Mezcla dos playlists y crea una nueva combinada.
+     *
+     * @param playlistsIds Objeto que contiene los IDs de las playlists a mezclar.
+     * @param authentication Información del usuario autenticado.
+     * @return [ResponseEntity] con la nueva playlist mezclada.
+     */
     @PostMapping("/mix")
     fun mezclarPlaylists(
         @RequestBody playlistsIds: Mix,
@@ -80,6 +124,14 @@ class PlaylistController {
         return ResponseEntity.ok(mixedPlaylist)
     }
 
+    /**
+     * Edita una playlist existente.
+     *
+     * @param playlistId ID de la playlist a editar.
+     * @param dto Datos nuevos de la playlist.
+     * @param authentication Información del usuario autenticado.
+     * @return [ResponseEntity] con la playlist actualizada.
+     */
     @PutMapping("/{playlistId}/editar")
     fun editarPlaylist(
         @PathVariable playlistId: String,
@@ -92,6 +144,13 @@ class PlaylistController {
         return ResponseEntity.ok(modificada)
     }
 
+    /**
+     * Elimina una playlist creada por el usuario.
+     *
+     * @param playlistId ID de la playlist.
+     * @param authentication Información del usuario autenticado.
+     * @return [ResponseEntity] vacío si se eliminó correctamente.
+     */
     @DeleteMapping("/{playlistId}")
     fun eliminarPlaylist(
         @PathVariable playlistId: String,
@@ -103,6 +162,14 @@ class PlaylistController {
         return ResponseEntity.noContent().build()
     }
 
+    /**
+     * Agrega una canción a una playlist.
+     *
+     * @param playlistId ID de la playlist.
+     * @param cancionId ID de la canción.
+     * @param authentication Información del usuario autenticado.
+     * @return [ResponseEntity] con la playlist actualizada.
+     */
     @PutMapping("/{playlistId}/agregarCancion/{cancionId}")
     fun agregarCancionAPlaylist(
         @PathVariable playlistId: String,
@@ -115,6 +182,14 @@ class PlaylistController {
         return ResponseEntity.ok(actualizada)
     }
 
+    /**
+     * Elimina una canción de una playlist.
+     *
+     * @param playlistId ID de la playlist.
+     * @param cancionId ID de la canción.
+     * @param authentication Información del usuario autenticado.
+     * @return [ResponseEntity] con la playlist actualizada.
+     */
     @PutMapping("/{playlistId}/eliminarCancion/{cancionId}")
     fun eliminarCancionDePlaylist(
         @PathVariable playlistId: String,
@@ -127,6 +202,13 @@ class PlaylistController {
         return ResponseEntity.ok(actualizada)
     }
 
+    /**
+     * Elimina un "like" de una playlist.
+     *
+     * @param authentication Información del usuario autenticado.
+     * @param playlistId ID de la playlist.
+     * @return [ResponseEntity] con el usuario actualizado.
+     */
     @DeleteMapping("/like/{playlistId}")
     fun unlikePlaylist(
         authentication: Authentication,

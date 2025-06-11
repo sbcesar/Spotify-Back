@@ -7,7 +7,6 @@ import com.example.spotifyapitfg.dto.UsuarioDTO
 import com.example.spotifyapitfg.error.exception.ConflictException
 import com.example.spotifyapitfg.error.exception.NotFoundException
 import com.example.spotifyapitfg.mapper.Mapper
-import com.example.spotifyapitfg.models.Biblioteca
 import com.example.spotifyapitfg.models.Role
 import com.example.spotifyapitfg.models.Usuario
 import com.example.spotifyapitfg.repository.PlaylistRepository
@@ -16,6 +15,16 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.stereotype.Service
 
+/**
+ * Servicio encargado de gestionar las operaciones relacionadas con los usuarios,
+ * como la obtención de datos, registro, login y actualización de estado PREMIUM.
+ *
+ * @property usuarioRepository Repositorio de usuarios.
+ * @property spotifySearchService Servicio para obtener datos desde Spotify.
+ * @property playlistRepository Repositorio de playlists de la aplicación.
+ * @property firebaseAuthService Servicio de autenticación con Firebase.
+ * @property mapper Mapeador para convertir entidades a DTOs.
+ */
 @Service
 class UsuarioService {
 
@@ -34,6 +43,13 @@ class UsuarioService {
     @Autowired
     private lateinit var mapper: Mapper
 
+    /**
+     * Obtiene los datos básicos del usuario y su biblioteca en formato DTO.
+     *
+     * @param uid ID del usuario.
+     * @return [UsuarioDTO] con la información del usuario y su biblioteca.
+     * @throws UsernameNotFoundException si el usuario no existe.
+     */
     fun obtenerUsuarioPorId(uid: String): UsuarioDTO {
         val usuario = usuarioRepository.findById(uid)
             .orElseThrow { UsernameNotFoundException("Usuario no encontrado") }
@@ -65,6 +81,14 @@ class UsuarioService {
         return usuario.nombre
     }
 
+    /**
+     * Obtiene un DTO completo del usuario con su biblioteca expandida,
+     * incluyendo los datos reales de canciones, artistas, álbumes y playlists.
+     *
+     * @param uid ID del usuario autenticado.
+     * @return [UsuarioBibliotecaMostrableDTO] con todos los datos visibles de la biblioteca.
+     * @throws UsernameNotFoundException si el usuario no existe.
+     */
     fun obtenerUsuarioMostrable(uid: String): UsuarioBibliotecaMostrableDTO {
         val usuario = usuarioRepository.findById(uid)
             .orElseThrow { UsernameNotFoundException("Usuario no encontrado") }
@@ -119,6 +143,13 @@ class UsuarioService {
         )
     }
 
+    /**
+     * Registra un nuevo usuario si su ID no está ya presente en la base de datos.
+     *
+     * @param usuario Objeto [Usuario] a registrar.
+     * @return [UsuarioDTO] con los datos del usuario registrado.
+     * @throws ConflictException si ya existe un usuario con el mismo ID.
+     */
     fun registrarUsuario(usuario: Usuario): UsuarioDTO {
         if (usuarioRepository.existsById(usuario.id!!)) throw ConflictException("El usuario ya existe")
 
@@ -127,6 +158,13 @@ class UsuarioService {
         return mapper.toDTO(usuarioGuardado)
     }
 
+    /**
+     * Inicia sesión validando el token de Firebase y devuelve el DTO del usuario.
+     *
+     * @param idToken Token JWT emitido por Firebase.
+     * @return [UsuarioDTO] con los datos del usuario autenticado.
+     * @throws UsernameNotFoundException si el token no es válido o el usuario no se encuentra en la base de datos.
+     */
     fun login(idToken: String): UsuarioDTO {
         try {
             val uid = firebaseAuthService.login(idToken)
@@ -139,6 +177,12 @@ class UsuarioService {
         }
     }
 
+    /**
+     * Actualiza el rol de un usuario a `PREMIUM`.
+     *
+     * @param usuarioId ID del usuario que ha completado el pago.
+     * @throws NotFoundException si el usuario no existe.
+     */
     fun actualizarPremium(usuarioId: String) {
         val usuario = usuarioRepository.findById(usuarioId).orElseThrow { NotFoundException("Usuario no encontrado") }
 

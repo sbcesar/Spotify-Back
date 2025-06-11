@@ -1,18 +1,21 @@
 package com.example.spotifyapitfg.controller
 
-import com.example.spotifyapitfg.models.Role
-import com.example.spotifyapitfg.repository.UsuarioRepository
 import com.example.spotifyapitfg.service.StripeService
 import com.example.spotifyapitfg.service.UsuarioService
-import com.stripe.net.Webhook
-
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.Authentication
 import org.springframework.web.bind.annotation.*
 
-
+/**
+ * Controlador REST para gestionar operaciones relacionadas con Stripe,
+ * como el inicio del proceso de checkout y el manejo de webhooks.
+ *
+ * @property stripeService Servicio encargado de interactuar con la API de Stripe.
+ * @property usuarioService Servicio para actualizar el estado del usuario en la base de datos.
+ * @property webhookSecret Clave secreta utilizada para validar los webhooks de Stripe.
+ */
 @RestController
 @RequestMapping("/stripe")
 class StripeController {
@@ -27,7 +30,10 @@ class StripeController {
     private lateinit var webhookSecret: String
 
     /**
-     * Inicia el proceso de pago y devuelve la URL del checkout
+     * Inicia una sesión de checkout en Stripe para que el usuario realice el pago de la suscripción.
+     *
+     * @param authentication Información de autenticación del usuario actual.
+     * @return Un objeto [ResponseEntity] que contiene la URL de la sesión de checkout.
      */
     @PostMapping("/checkout")
     fun iniciarCheckout(
@@ -40,7 +46,12 @@ class StripeController {
     }
 
     /**
-     * Webhook de Stripe que convierte al usuario en PREMIUM cuando se completa el pago
+     * Endpoint para manejar los webhooks enviados por Stripe.
+     * Verifica el evento y si el pago fue exitoso, actualiza el estado del usuario a PREMIUM.
+     *
+     * @param payload Cuerpo del webhook recibido.
+     * @param sigHeader Encabezado de firma proporcionado por Stripe para validar el evento.
+     * @return Un [ResponseEntity] indicando el resultado del procesamiento del webhook.
      */
     @PostMapping("/webhook")
     fun manejarWebhook(

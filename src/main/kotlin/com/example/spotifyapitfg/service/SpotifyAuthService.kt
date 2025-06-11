@@ -8,6 +8,14 @@ import org.springframework.util.MultiValueMap
 import org.springframework.web.client.RestTemplate
 import java.util.*
 
+/**
+ * Servicio encargado de autenticar la aplicación ante la API de Spotify utilizando el flujo Client Credentials.
+ * Solicita un token de acceso que permite realizar llamadas a endpoints públicos de Spotify.
+ *
+ * @property clientId ID de cliente registrado en Spotify, inyectado desde la configuración.
+ * @property clientSecret Clave secreta del cliente de Spotify.
+ * @property tokenUrl URL del endpoint de autenticación de Spotify.
+ */
 @Service
 class SpotifyAuthService {
 
@@ -20,11 +28,16 @@ class SpotifyAuthService {
     @Value("\${spotify.api.tokenUrl}")
     lateinit var tokenUrl: String
 
+    /**
+     * Solicita un token de acceso a Spotify usando el flujo de credenciales del cliente.
+     *
+     * @return Token de acceso (access_token) como [String], necesario para autenticar peticiones a la API de Spotify.
+     */
     fun obtenerTokenDeAcceso(): String {
 
-        println("clientId: $clientId")
-        println("clientSecret: $clientSecret")
-        println("tokenUrl: $tokenUrl")
+        // println("clientId: $clientId")
+        // println("clientSecret: $clientSecret")
+        // println("tokenUrl: $tokenUrl")
 
         val restTemplate = RestTemplate()
 
