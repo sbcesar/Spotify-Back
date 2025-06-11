@@ -15,13 +15,16 @@ import org.springframework.stereotype.Service
  * @property mapper Mapeador para convertir entidades de usuario a DTOs.
  */
 @Service
-class AlbumService {
+class AlbumService(
+    private val usuarioRepository: UsuarioRepository,
+    private val mapper: Mapper
+) {
 
-    @Autowired
-    private lateinit var usuarioRepository: UsuarioRepository
-
-    @Autowired
-    private lateinit var mapper: Mapper
+//    @Autowired
+//    private lateinit var usuarioRepository: UsuarioRepository
+//
+//    @Autowired
+//    private lateinit var mapper: Mapper
 
     /**
      * Añade un álbum a la lista de favoritos del usuario, si aún no existe.

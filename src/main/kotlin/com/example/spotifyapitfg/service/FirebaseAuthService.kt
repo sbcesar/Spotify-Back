@@ -17,10 +17,12 @@ import org.springframework.stereotype.Service
  * @property usuarioRepository Repositorio que permite acceder a la información de los usuarios en la base de datos.
  */
 @Service
-class FirebaseAuthService {
+class FirebaseAuthService(
+    private var usuarioRepository: UsuarioRepository
+) {
 
-    @Autowired
-    private lateinit var usuarioRepository: UsuarioRepository
+//    @Autowired
+//    private lateinit var usuarioRepository: UsuarioRepository
 
     /**
      * Registra un nuevo usuario en Firebase Authentication con el correo y la contraseña especificados.
