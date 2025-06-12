@@ -1,6 +1,6 @@
 package com.example.spotifyapitfg.controller
 
-import com.example.spotifyapitfg.dto.Mix
+import com.example.spotifyapitfg.models.Mix
 import com.example.spotifyapitfg.dto.PlaylistCreateDTO
 import com.example.spotifyapitfg.dto.PlaylistDTO
 import com.example.spotifyapitfg.dto.UsuarioDTO

@@ -62,8 +62,6 @@ class SpotifySearchService {
      * @return [Playlist] con estructura local.
      */
     fun buscarPlaylistSpotifyComoLocal(playlistId: String, headers: HttpHeaders): Playlist {
-        println("Recuperando playlist externa de Spotify: $playlistId")
-
         val playlistUrl = "https://api.spotify.com/v1/playlists/$playlistId"
         val playlistEntity = HttpEntity<String>(headers)
 

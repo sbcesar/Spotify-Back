@@ -1,11 +1,10 @@
 package com.example.spotifyapitfg.controller
 
-import com.example.spotifyapitfg.dto.Mix
+import com.example.spotifyapitfg.models.Mix
 import com.example.spotifyapitfg.dto.PlaylistCreateDTO
 import com.example.spotifyapitfg.dto.PlaylistDTO
 import com.example.spotifyapitfg.dto.UsuarioDTO
 import com.example.spotifyapitfg.models.Cancion
-import com.example.spotifyapitfg.security.FirebaseAuthenticationFilter
 import com.example.spotifyapitfg.service.PlaylistService
 import com.example.spotifyapitfg.service.SpotifySearchService
 import com.fasterxml.jackson.databind.ObjectMapper
